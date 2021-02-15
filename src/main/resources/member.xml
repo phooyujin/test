@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace xml을 구별하기 위한 이름 -->
+<!-- resultMap은 table에 컬러명과 class에 member 변수명이 다를 때 mapping하는 용도 -->
+<mapper namespace="memberns">
+	<select id="select" parameterType="String" resultType="member">
+		select * from member3 where id=#{id}
+	</select>
+	<insert id="insert" parameterType="member">
+		insert into member3 values (#{id},#{email},#{password},
+		#{name},#{fileName},'n',sysdate)
+	</insert>
+	<update id="update" parameterType="member">
+		update member3 set email=#{email},password=#{password},
+		name=#{name}
+		<!-- 파일을 선택하면 수정하고 파일을 선택하지 않으면 기존의 파일을 그냥 사용한다!-->
+		<if test="fileName!=null">
+			, fileName=#{fileName}
+		</if>
+		where id=#{id}
+	</update>
+	<update id="delete" parameterType="String">
+		update member3 set del='y' where id=#{id}
+	</update>
+	<insert id="insertPh" parameterType="memberphoto">
+		insert into memberphoto values(memberphoto_seq.nextval,#{id},#{fileName})
+	</insert>
+	<insert id="insertPhoto" parameterType="java.util.List">
+		insert all
+		<!-- foreach는 list에서 하나의 데이터씩 뽑아서 item에 넣어서 처리를 반복한다 -->
+		<foreach collection="list" item="item">
+		<!-- function get_seq를 사용하면 sequence를 한 문장에서 실행하는것으로 인식해서 1씩 증가가 한번만 작동 -->
+			into memberphoto (num,id,fileName)
+			values(get_seq,#{item.id},#{item.fileName})
+		</foreach>		
+		select * from dual
+	</insert>
+	<select id="listPhoto" parameterType="String" resultType="memberphoto">
+		select * from memberphoto where id=#{id} order by num
+	</select>
+</mapper>
