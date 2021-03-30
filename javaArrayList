@@ -1,0 +1,9 @@
+public class Main{
+  public static void main(String[] args){
+  //arrayList
+  ArrayList<String> cars= new ArrayList<String>();
+  cars.add("kia");
+  cars.add("volvo);
+  System.out.println(cars);
+  }
+}
